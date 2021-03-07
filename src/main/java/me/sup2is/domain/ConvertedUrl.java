@@ -21,11 +21,17 @@ public class ConvertedUrl {
 
     private String orgUrl;
     private String shorteningUrl;
-    private int duplicateConversionRequestCnt;
+    private int requestCnt;
 
     public static ConvertedUrl createConvertedUrl(String orgUrl) {
         ConvertedUrl convertedUrl = new ConvertedUrl();
         convertedUrl.orgUrl = orgUrl;
+        convertedUrl.requestCnt = 1;
         return convertedUrl;
     }
+
+    public void bindShorteningUrl(String shorteningUrl){
+        this.shorteningUrl = shorteningUrl;
+    }
+
 }
