@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <title>URL Shortening Service</title>
+</head>
+
+<body>
+    <div class="container text-center">
+        <br/>
+        <h1>URL Shortening Service</h1>
+        <br/>
+        <br/>
+        <br/>
+
+        <h2>Convert Url</h2>
+        <form>
+        <input type="url" id="orgUrl" class="form-control"/>
+        <br/>
+        <button type="button" id="convertBtn" class="btn btn-primary btn-block">Convert</button>
+        </form>
+        <br/>
+        <div class="errors">
+
+        </div>
+
+        <div class="resent">
+
+        </div>
+
+        <br/>
+        <br/>
+
+        <h2>Redirect To</h2>
+        <input type="url" class="form-control"/>
+        <br/>
+        <button type="button" class="btn btn-secondary btn-block">Redirect</button>
+    </div>
+</body>
+
+<script>
+
+    $("#convertBtn").click(function () {
+        $.ajax({
+          url: '/convert',
+          contentType: 'application/json',
+          type: 'post',
+          data: JSON.stringify({orgUrl: $("#orgUrl").val()}),
+          success: function(res) {
+            if(res.result === "SUCCESS") {
+                console.log(res);
+                var $p = $("<p>", {class: 'rounded bg-muted' ,});
+                var $a = $("<a>", {text: 'http://localhost/' + res.data.shorteningUrl, href: 'http://localhost/' + res.data.shorteningUrl})
+                var $span = $("<span>", {text: "중복 요청 :" + res.data.requestCnt});
+                $p.append($a);
+                $p.append($span);
+                $(".resent").prepend($p);
+            }
+          },
+          error: function(data) {
+            console.log(data);
+          }
+        });
+    });
+
+</script>
+
+</html>
