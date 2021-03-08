@@ -17,7 +17,7 @@ import javax.persistence.Id;
 public class ConvertedUrl {
 
     @Id @GeneratedValue
-    private long id;
+    private Long id;
 
     private String orgUrl;
     private String shorteningUrl;
