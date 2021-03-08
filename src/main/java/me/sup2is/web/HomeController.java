@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 import me.sup2is.domain.ConvertedUrl;
 import me.sup2is.service.ConvertedUrlService;
 import me.sup2is.web.dto.ConvertedUrlRequestDto;
+import me.sup2is.web.dto.JsonResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,22 +25,27 @@ public class HomeController {
     }
 
     @PostMapping("/convert")
-    public String convert(@RequestBody @Valid ConvertedUrlRequestDto convertedUrlRequestDto,
-                          BindingResult bindingResult,
-                          Model model) {
+    @ResponseBody
+    public ResponseEntity<JsonResult<?>> convert(@RequestBody @Valid ConvertedUrlRequestDto convertedUrlRequestDto,
+                                              BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(toList()));
-        } else {
-            convertedUrlService.register(convertedUrlRequestDto.toConvertedUrl());
-            model.addAttribute("convertedUrl", convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl()));
+            return new ResponseEntity<>(new JsonResult<>(bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
-        return "index";
+        convertedUrlService.register(convertedUrlRequestDto.toConvertedUrl());
+        ConvertedUrl findOne = convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl());
+        return ResponseEntity.ok(new JsonResult<>(findOne));
     }
 
     @GetMapping("/{shorteningUrl}")
     public String redirect(@PathVariable("shorteningUrl") String shorteningUrl) {
         ConvertedUrl convertedUrl = convertedUrlService.findByShorteningUrl(shorteningUrl);
         return "redirect:" + convertedUrl.getOrgUrl();
+    }
+
+    @GetMapping("/favicon.ico")
+    @ResponseBody
+    public void disableFavicon() {
+        //not working. The favicon is handled by the web server
     }
 
 }
