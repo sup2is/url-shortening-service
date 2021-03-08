@@ -6,11 +6,12 @@ import me.sup2is.web.dto.ConvertedUrlRequestDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import static java.util.stream.Collectors.toList;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,9 +25,11 @@ public class HomeController {
     }
 
     @PostMapping("/convert")
-    public String convert(@RequestBody @Valid ConvertedUrlRequestDto convertedUrlRequestDto, BindingResult bindingResult, Model model) {
+    public String convert(@RequestBody @Valid ConvertedUrlRequestDto convertedUrlRequestDto,
+                          BindingResult bindingResult,
+                          Model model) {
         if(bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldErrors());
+            model.addAttribute("errors", bindingResult.getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(toList()));
         } else {
             convertedUrlService.register(convertedUrlRequestDto.toConvertedUrl());
             model.addAttribute("convertedUrl", convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl()));
