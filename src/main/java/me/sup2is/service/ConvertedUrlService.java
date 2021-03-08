@@ -5,9 +5,11 @@ import me.sup2is.domain.ConvertedUrl;
 import me.sup2is.exception.ConvertedUrlNotFoundException;
 import me.sup2is.repository.ConvertedUrlRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ConvertedUrlService {
 
     private final ConvertedUrlRepository convertedUrlRepository;
