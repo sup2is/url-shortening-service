@@ -16,4 +16,5 @@ public interface ConvertedUrlRepository extends JpaRepository<ConvertedUrl, Long
     @Query("UPDATE ConvertedUrl c SET c.requestCnt = c.requestCnt + 1 where c.id = :targetId")
     void updateRequestCnt(Long targetId);
 
+    Optional<ConvertedUrl> findByShorteningUrl(String shorteningUrl);
 }

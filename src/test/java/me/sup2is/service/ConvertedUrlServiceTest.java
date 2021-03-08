@@ -87,6 +87,31 @@ class ConvertedUrlServiceTest {
 
     }
 
+    @Test
+    public void find_by_shortening_url() {
+        //given
+        String orgUrl = "http://localhost/test";
+        String shorteningUrl = "AABBCC";
+        ConvertedUrl expect = ConvertedUrl.createConvertedUrl(orgUrl);
+        expect.bindShorteningUrl(shorteningUrl);
+        when(convertedUrlRepository.findByShorteningUrl(shorteningUrl))
+            .thenReturn(Optional.of(expect));
+
+        //when
+        ConvertedUrl byShorteningUrl = convertedUrlService.findByShorteningUrl(shorteningUrl);
+
+        //then
+        assertEquals(expect, byShorteningUrl);
+    }
+
+    @Test
+    public void find_by_shortening_url_when_not_exist() {
+        //given
+        //when
+        //then
+        assertThrows(ConvertedUrlNotFoundException.class, () -> convertedUrlService.findByShorteningUrl("AABBCC"));
+    }
+
 
 
 }

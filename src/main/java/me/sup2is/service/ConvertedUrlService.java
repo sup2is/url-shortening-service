@@ -28,4 +28,9 @@ public class ConvertedUrlService {
         }
     }
 
+    public ConvertedUrl findByShorteningUrl(String shorteningUrl) {
+        return convertedUrlRepository.findByShorteningUrl(shorteningUrl)
+            .orElseThrow(() -> new ConvertedUrlNotFoundException(shorteningUrl + " is invalid."));
+    }
+
 }

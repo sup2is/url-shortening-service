@@ -67,4 +67,19 @@ class ConvertedUrlRepositoryTest {
         assertEquals(11, findOne.getRequestCnt());
     }
 
+    @Test
+    public void find_by_shortening_url() {
+        //given
+        String shorteningUrl = "AABBCC";
+        ConvertedUrl convertedUrl = ConvertedUrl.createConvertedUrl("http://localhost/test");
+        convertedUrl.bindShorteningUrl(shorteningUrl);
+        convertedUrlRepository.save(convertedUrl);
+
+        //when
+        ConvertedUrl findOne = convertedUrlRepository.findByShorteningUrl(shorteningUrl).get();
+
+        //then
+        assertEquals(convertedUrl, findOne);
+    }
+
 }
