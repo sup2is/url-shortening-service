@@ -1,6 +1,7 @@
 package me.sup2is.web;
 
 import lombok.RequiredArgsConstructor;
+import me.sup2is.domain.ConvertedUrl;
 import me.sup2is.service.ConvertedUrlService;
 import me.sup2is.web.dto.ConvertedUrlRequestDto;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,12 @@ public class HomeController {
             model.addAttribute("convertedUrl", convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl()));
         }
         return "index";
+    }
+
+    @GetMapping("/{shorteningUrl}")
+    public String redirect(@PathVariable("shorteningUrl") String shorteningUrl) {
+        ConvertedUrl convertedUrl = convertedUrlService.findByShorteningUrl(shorteningUrl);
+        return "redirect:" + convertedUrl.getOrgUrl();
     }
 
 }
