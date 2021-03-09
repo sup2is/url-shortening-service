@@ -15,6 +15,7 @@ public class ConvertedUrlService {
     private final ConvertedUrlRepository convertedUrlRepository;
     private final StringGenerator<Long> stringGenerator;
 
+    @Transactional(readOnly = true)
     public ConvertedUrl findByOrgUrl(String orgUrl) {
         return convertedUrlRepository.findByOrgUrl(orgUrl)
                 .orElseThrow(() -> new ConvertedUrlNotFoundException("Request url is not shortening"));
@@ -30,6 +31,7 @@ public class ConvertedUrlService {
         }
     }
 
+    @Transactional(readOnly = true)
     public ConvertedUrl findByShorteningUrl(String shorteningUrl) {
         return convertedUrlRepository.findByShorteningUrl(shorteningUrl)
             .orElseThrow(() -> new ConvertedUrlNotFoundException(shorteningUrl + " is invalid."));
