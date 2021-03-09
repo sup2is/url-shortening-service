@@ -32,7 +32,7 @@ public class ConvertController {
             convertedUrlService.register(convertedUrlRequestDto.toConvertedUrl());
             ConvertedUrl findOne = convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl());
             return ResponseEntity.ok(new JsonResult<>(findOne));
-        } catch (ConvertedUrlNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(new JsonResult<>(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
