@@ -5,9 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -17,9 +15,13 @@ public class ConvertedUrl {
     @Id @GeneratedValue
     private Long id;
 
+    @Column(unique = true)
     private String orgUrl;
     private String shorteningUrl;
     private int requestCnt;
+
+    @Version
+    private int version;
 
     public static ConvertedUrl createConvertedUrl(String orgUrl) {
         ConvertedUrl convertedUrl = new ConvertedUrl();
@@ -30,6 +32,10 @@ public class ConvertedUrl {
 
     public void bindShorteningUrl(String shorteningUrl){
         this.shorteningUrl = shorteningUrl;
+    }
+
+    public void increaseRequestCnt() {
+        this.requestCnt ++;
     }
 
 }
