@@ -1,17 +1,18 @@
-package me.sup2is.web;
+package me.sup2is.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.sup2is.domain.ConvertedUrl;
 import me.sup2is.service.ConvertedUrlService;
+import me.sup2is.web.HomeController;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -19,34 +20,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@Import(ObjectMapper.class)
+
 @SpringBootTest(classes = HomeController.class)
-@EnableWebMvc
-class HomeControllerTest {
+class GlobalControllerAdviceTest {
+
+    MockMvc mockMvc;
 
     @Autowired
-    MockMvc mockMvc;
+    HomeController homeController;
 
     @MockBean
     ConvertedUrlService convertedUrlService;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @Test
-    public void common_index() throws Exception{
-        //given
-        //when
-        MvcResult mvcResult = mockMvc.perform(get("/")).andDo(print())
-            .andExpect(status().isOk())
-            .andReturn();
-        //then
-        assertEquals("index", mvcResult.getResponse().getForwardedUrl());
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(homeController)
+                .setControllerAdvice(new GlobalControllerAdvice())
+                .build();
     }
 
     @Test
-    public void redirect() throws Exception{
+    public void redirect_not_exist_shortening_url() throws Exception{
         //given
         String orgUrl = "http://localhost/test";
         ConvertedUrl convertedUrl = ConvertedUrl.createConvertedUrl(orgUrl);
@@ -54,16 +48,19 @@ class HomeControllerTest {
         convertedUrl.bindShorteningUrl(shorteningUrl);
 
         when(convertedUrlService.findByShorteningUrl(shorteningUrl))
-            .thenReturn(convertedUrl);
+                .thenThrow(new ConvertedUrlNotFoundException(shorteningUrl + " is invalid."));
 
         //when
         MvcResult mvcResult = mockMvc.perform(get("/" + shorteningUrl)).andDo(print())
-            .andExpect(status().is3xxRedirection())
-            .andReturn();
-
+                .andExpect(status().isOk())
+                .andReturn();
 
         //then
-        assertEquals(convertedUrl.getOrgUrl(), mvcResult.getResponse().getRedirectedUrl());
+        assertEquals("index", mvcResult.getResponse().getForwardedUrl());
+        List<String> errors = (List<String>) mvcResult.getModelAndView().getModelMap().get("errors");
+        assertEquals(1, errors.size());
+        assertEquals("AABBCC is invalid.", errors.get(0));
     }
+
 
 }

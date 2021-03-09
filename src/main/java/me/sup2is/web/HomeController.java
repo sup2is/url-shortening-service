@@ -3,15 +3,10 @@ package me.sup2is.web;
 import lombok.RequiredArgsConstructor;
 import me.sup2is.domain.ConvertedUrl;
 import me.sup2is.service.ConvertedUrlService;
-import me.sup2is.web.dto.ConvertedUrlRequestDto;
-import me.sup2is.web.dto.JsonResult;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,18 +17,6 @@ public class HomeController {
     @GetMapping("/")
     public String index() {
         return "index";
-    }
-
-    @PostMapping("/convert")
-    @ResponseBody
-    public ResponseEntity<JsonResult<?>> convert(@RequestBody @Valid ConvertedUrlRequestDto convertedUrlRequestDto,
-                                              BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            return new ResponseEntity<>(new JsonResult<>(bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
-        }
-        convertedUrlService.register(convertedUrlRequestDto.toConvertedUrl());
-        ConvertedUrl findOne = convertedUrlService.findByOrgUrl(convertedUrlRequestDto.getOrgUrl());
-        return ResponseEntity.ok(new JsonResult<>(findOne));
     }
 
     @GetMapping("/{shorteningUrl}")
