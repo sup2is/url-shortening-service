@@ -1,6 +1,5 @@
 package me.sup2is.web.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.sup2is.domain.ConvertedUrl;
@@ -9,7 +8,6 @@ import org.hibernate.validator.constraints.URL;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class ConvertedUrlRequestDto {
 
