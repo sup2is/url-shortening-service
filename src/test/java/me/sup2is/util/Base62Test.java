@@ -30,4 +30,12 @@ class Base62Test {
         assertTrue(8 <= encode.length());
     }
 
+    @Test
+    public void decode() {
+        long expect = 10000000000000L;
+        String encode = Base62.encode(expect);
+        long decode = Base62.decode(encode);
+        assertEquals(expect, decode);
+    }
+
 }

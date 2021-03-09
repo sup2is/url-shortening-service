@@ -5,7 +5,6 @@ public class Base62 {
     static final char[] BASE62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
 
     public static String encode(long value) {
-        value *= 10;
         final StringBuilder sb = new StringBuilder();
         do {
             int i = (int) (value % 62);
