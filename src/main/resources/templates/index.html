@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/jquery-ui/jquery-ui.js}"></script>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <title>URL Shortening Service</title>
 </head>
@@ -15,17 +16,12 @@
         <br/>
 
         <h2>Convert Url</h2>
-        <form>
-        <input type="url" id="orgUrl" class="form-control"/>
-        <br/>
-        <button type="button" id="convertBtn" class="btn btn-primary btn-block">Convert</button>
-        </form>
-        <br/>
-        <div class="errors">
-
+        <input type="url" id="orgUrl" class="form-control mt-4"/>
+        <div class="api-error mt-4 rounded text-danger">
         </div>
+        <button type="button" id="convertBtn" class="btn btn-primary btn-block mt-4">Convert</button>
 
-        <div class="resent">
+        <div class="resent mt-4">
 
         </div>
 
@@ -33,36 +29,98 @@
         <br/>
 
         <h2>Redirect To</h2>
-        <input type="url" class="form-control"/>
-        <br/>
-        <button type="button" class="btn btn-secondary btn-block">Redirect</button>
+        <input type="url" id="shorteningUrl" class="form-control mt-4"/>
+        <button type="button" id="redirectBtn" class="btn btn-secondary btn-block mt-4">Redirect</button>
+        <div class="error mt-4 rounded text-danger">
+            <th:block th:each="e : ${errors}">
+                <p class="text-danger" th:text="${e}"></p>
+            </th:block>
+        </div>
     </div>
 </body>
 
 <script>
 
-    $("#convertBtn").click(function () {
-        $.ajax({
-          url: '/convert',
-          contentType: 'application/json',
-          type: 'post',
-          data: JSON.stringify({orgUrl: $("#orgUrl").val()}),
-          success: function(res) {
-            if(res.result === "SUCCESS") {
-                console.log(res);
-                var $p = $("<p>", {class: 'rounded bg-muted' ,});
-                var $a = $("<a>", {text: 'http://localhost/' + res.data.shorteningUrl, href: 'http://localhost/' + res.data.shorteningUrl})
-                var $span = $("<span>", {text: "중복 요청 :" + res.data.requestCnt});
-                $p.append($a);
-                $p.append($span);
-                $(".resent").prepend($p);
+    $(document).ready(function() {
+
+
+        $("#redirectBtn").click(function () {
+            var shorteningUrl = $("#shorteningUrl").val();
+            if(!validateShorteningUrl(shorteningUrl)) {
+                createErrorTemplate([{message: shorteningUrl + ' is invalid'}], ".error")
+                return;
             }
-          },
-          error: function(data) {
-            console.log(data);
-          }
+            window.location.href = shorteningUrl.substring(shorteningUrl.lastIndexOf("/") + 1, shorteningUrl.length);
         });
+
+        $("#convertBtn").click(function () {
+
+            var orgUrl = $("#orgUrl").val();
+
+            if(!(orgUrl.includes('http://', 0) || orgUrl.includes('https://', 0))){
+                orgUrl = "http://" + orgUrl;
+            }
+
+            if(!validateOrgUrl(orgUrl)) {
+                createErrorTemplate([{message: 'Unable to shorten that link. It is not a valid url.'}], ".api-error")
+                return;
+            }
+
+            const host = 'http://' + window.location.hostname + '/';
+
+            $.ajax({
+                url: '/convert',
+                contentType: 'application/json',
+                type: 'post',
+                data: JSON.stringify({orgUrl: orgUrl}),
+                success: function(res) {
+                    if(res.result === "SUCCESS") {
+                        clearTemplate(".api-error");
+                        var $p = $("<p>");
+                        var $orgUrlSpan = $("<span>", {text: orgUrl + " ==> "});
+                        var $a = $("<a>", {text: host + res.data.shorteningUrl, href: host + res.data.shorteningUrl})
+                        var $span = $("<span>", {text: "  (Request Count:" + res.data.requestCnt + ")"});
+                        $p.append($orgUrlSpan)
+                            .append($a)
+                            .append($span);
+                        $p.effect("highlight", {}, 3000);
+                        $(".resent").prepend($p);
+                    }
+                },
+                error: function(res) {
+                    createErrorTemplate(res.responseJSON.fieldErrors, ".api-error")
+                }
+            });
+
+        });
+
+        function createErrorTemplate(errors, classname) {
+            var $errors = $(classname);
+            errors.forEach(function (e) {
+                $errors.html($("<p>", {text: e.message}));
+            });
+        }
+
+        function clearTemplate(classname) {
+            $(classname).html("");
+        }
+
+        function validateShorteningUrl(shorteningUrl) {
+            var hostname = window.location.hostname.replace("www\.", "");
+            console.log(hostname);
+            var expression = "(http:\\/\\/"+hostname+"\\/[a-zA-Z0-9]+|"+hostname+"\\/[a-zA-Z0-9]+)";
+            var regex = new RegExp(expression);
+            return shorteningUrl.match(regex);
+        }
+
+        function validateOrgUrl(orgUrl) {
+            var expression = "(https?:\\/\\/[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|[a-zA-Z0-9]+\\.[^\\s]{2,})";
+            var regex = new RegExp(expression);
+            return orgUrl.match(regex);
+        }
+
     });
+
 
 </script>
 
