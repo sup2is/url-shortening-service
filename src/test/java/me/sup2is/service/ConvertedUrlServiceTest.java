@@ -68,6 +68,27 @@ class ConvertedUrlServiceTest {
     }
 
     @Test
+    public void register_when_exist_org_url() {
+        //given
+        String orgUrl = "http://localhost/test";
+        ConvertedUrl convertedUrl = ConvertedUrl.createConvertedUrl(orgUrl);
+
+        when(convertedUrlRepository.existsByOrgUrl(orgUrl))
+                .thenReturn(true);
+
+        when(convertedUrlRepository.findByOrgUrl(orgUrl))
+                .thenReturn(Optional.of(convertedUrl));
+
+        //when
+        for (int i = 0; i < 10; i++) {
+            convertedUrlService.register(convertedUrl);
+        }
+
+        //then
+        assertEquals(11, convertedUrl.getRequestCnt());
+    }
+
+    @Test
     public void find_by_shortening_url() {
         //given
         String orgUrl = "http://localhost/test";
