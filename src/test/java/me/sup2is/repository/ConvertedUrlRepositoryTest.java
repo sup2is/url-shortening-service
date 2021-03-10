@@ -51,23 +51,6 @@ class ConvertedUrlRepositoryTest {
     }
 
     @Test
-    public void update_request_cnt() {
-        //given
-        String url = "http://localhost/test";
-        ConvertedUrl convertedUrl = ConvertedUrl.createConvertedUrl(url);
-        convertedUrlRepository.save(convertedUrl);
-
-        //when
-        for (int i = 0; i < 10; i++) {
-            convertedUrlRepository.updateRequestCnt(convertedUrl.getId());
-        }
-
-        //then
-        ConvertedUrl findOne = convertedUrlRepository.findById(convertedUrl.getId()).get();
-        assertEquals(11, findOne.getRequestCnt());
-    }
-
-    @Test
     public void find_by_shortening_url() {
         //given
         String shorteningUrl = "AABBCC";

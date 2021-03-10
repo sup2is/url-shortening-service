@@ -24,7 +24,7 @@ public class ConvertedUrlService {
     public void register(ConvertedUrl convertedUrl) {
         if(convertedUrlRepository.existsByOrgUrl(convertedUrl.getOrgUrl())) {
             ConvertedUrl findOne = findByOrgUrl(convertedUrl.getOrgUrl());
-            convertedUrlRepository.updateRequestCnt(findOne.getId());
+            findOne.increaseRequestCnt();
         } else {
             convertedUrlRepository.save(convertedUrl);
             convertedUrl.bindShorteningUrl(stringGenerator.generate(convertedUrl.getId()));
