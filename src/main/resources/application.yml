@@ -1,0 +1,16 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;
+    username: sa
+    password:
+  mvc:
+    static-path-pattern: '/webjars/**'
+
+server:
+  port: 80
