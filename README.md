@@ -12,11 +12,11 @@ cd url-shortening-service
 ./mvn spring-boot:run
 ```
 
-- [localhost](localhost) 접속
+- [http://localhost](http://localhost) 접속
 
 **h2-console (Database) 접속 방법**
 
-- [localhost/h2-console](localhost/h2-console) 접속
+- [http://localhost/h2-console](http://localhost/h2-console) 접속
 - 접속 정보
   - Driver Class: `org.h2.Driver`
   - JDBC URL: `jdbc:h2:mem:test`
