@@ -107,16 +107,15 @@
 
         function validateShorteningUrl(shorteningUrl) {
             var hostname = window.location.hostname.replace("www\.", "");
-            console.log(hostname);
-            var expression = "(http:\\/\\/"+hostname+"\\/[a-zA-Z0-9]+|"+hostname+"\\/[a-zA-Z0-9]+)";
+            var expression = "(http:\/\/"+hostname+"\/[a-zA-Z0-9]+|"+hostname+"\/[a-zA-Z0-9]+)";
             var regex = new RegExp(expression);
-            return shorteningUrl.match(regex);
+            return regex.test(shorteningUrl);
         }
 
         function validateOrgUrl(orgUrl) {
-            var expression = "(https?:\\/\\/[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|[a-zA-Z0-9]+\\.[^\\s]{2,})";
+            var expression = "(https?:\/\/[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|[a-zA-Z0-9]+\.[^\s]{2,})";
             var regex = new RegExp(expression);
-            return orgUrl.match(regex);
+            return regex.test(orgUrl);
         }
 
     });
